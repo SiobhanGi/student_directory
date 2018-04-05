@@ -69,14 +69,20 @@ end
 
 def print(sorted_students)
   i = 0
-  until i == sorted_students.size
-    if sorted_students[i][:name].size <= 12
-      puts ""
-      puts ("#{(i+1)}. #{sorted_students[i][:name]}, (#{sorted_students[i][:cohort]} cohort)").center(40)
-      puts ("D.O.B: #{sorted_students[i][:dob]}").center(40)
-      puts ("height: #{sorted_students[i][:height]}").center(40)
-      puts ("gender: #{sorted_students[i][:gender]}").center(40)
-      i += 1
+  cohorts_arr = sorted_students.map {|dict| dict[:cohort]}.uniq
+
+  cohorts_arr.each do |cohort|
+    puts ""
+    puts "#{cohort}".center(40)
+    sorted_students.each do |student|
+      if student[:cohort] == cohort
+          puts ""
+          puts ("#{(i+1)}. #{sorted_students[i][:name]}").center(40)
+          puts ("D.O.B: #{sorted_students[i][:dob]}").center(40)
+          puts ("height: #{sorted_students[i][:height]}").center(40)
+          puts ("gender: #{sorted_students[i][:gender]}").center(40)
+          i+=1
+      end
     end
   end
 end
