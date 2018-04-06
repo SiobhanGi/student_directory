@@ -6,14 +6,14 @@ def cohort
   cohort = gets.chop.to_sym.capitalize
 end
 
-def dob
-puts "Please enter a students D.O.B."
-dob = gets.chop.to_sym.capitalize
+def age
+puts "Please enter a students age."
+age = gets.chop.capitalize
 end
 
 def height
   puts "Enter the students height."
-  height = gets.chomp.to_sym.capitalize
+  height = gets.chomp.capitalize
 end
 
 def gender
@@ -25,7 +25,7 @@ def input_students
   puts "Please enter the names of the student."
   name = gets.chomp
   while !name.empty? do
-  current_student = {name: name.capitalize.to_sym, cohort: cohort, dob: dob, height: height, gender: gender}.reject {|k,v| v == nil}
+  current_student = {name: name.capitalize.to_sym, cohort: cohort, age: age, height: height, gender: gender}.reject {|k,v| v == nil}
   current_student.each do |k, v|
     puts "#{k}: #{v}"
   end
@@ -52,12 +52,12 @@ def print_students_list
   if @students.size >= 1
     @students.map {|dict| dict[:cohort]}.uniq.each do |cohort|
       puts ""
-      puts "#{cohort}".center(40)
+      puts "#{cohort} cohort".center(40)
       @students.each do |student|
         if student[:cohort] == cohort
             puts ""
             puts ("#{(i+1)}. #{@students[i][:name]}").center(40)
-            puts ("D.O.B: #{@students[i][:dob]}").center(40)
+            puts ("age: #{@students[i][:age]}").center(40)
             puts ("height: #{@students[i][:height]}").center(40)
             puts ("gender: #{@students[i][:gender]}").center(40)
             i+=1
@@ -72,10 +72,11 @@ def print_footer
 end
 
 def print_menu
-  puts "Which option would you like to do?\n\n"
+  puts "What would you like to do? Type the option number\n\n"
   puts "Option 1: Add students."
   puts "Option 2: Show current students."
-  puts "Option 3: Save students to csv."
+  puts "Option 3: Save students to csv file."
+  puts "Option 4: Load students from csv file."
   puts "Option 9: Exit\n"
 end
 
@@ -88,16 +89,17 @@ end
 def process(selection)
   case selection
   when "1"
-    # user adds students
-    input_students
+    input_students # user manually add data
   when "2"
     # prints all students
     show_students
-  when "3"
+  when "3" # saves student data to csv file
     save_students
-  when "9"
+  when "4" # loads student data from csv file
+    load_students
+  when "9" # exits program
     exit
-  else
+  else # exception case
     puts "I don't know what you meant, try again"
   end
 end
@@ -106,13 +108,23 @@ def save_students
   file = File.open("students.csv", "w")
   #  iterate over the students array and save to file
   @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:dob], student[:height], student[:gender]]
+    student_data = [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
     csv_line = student_data.join(",")
     file.puts csv_line
   end
   file.close
+  puts "\n\nFile successfully saved to students.csv\n\n"
 end
 
+def load_students
+  file = File.open("students.csv", "r")
+  file.readlines.each do |line|
+    name, cohort, age, height, gender = line.chomp.split(",")
+    @students << {name: name.to_sym, cohort: cohort.to_sym, age: age, height: height, gender: gender.to_sym}
+  end
+  file.close
+  puts "\n\nFile students.csv successfully loaded\n\n"
+end
 
 def interactive_menu
   loop do
