@@ -27,7 +27,6 @@ def input_students
   while !name.empty? do
     current_student = Hash.new("EMPTY")
     current_student = {name: name.capitalize.to_sym, cohort: cohort, dob: dob, height: height, gender: gender}.reject {|k,v| v == nil}
-    puts current_student
     current_student.each do |k, v|
       puts "#{k}: #{v}"
     end
@@ -47,19 +46,10 @@ def input_students
   students
 end
 
-
-
-def specific_students
-  puts "Enter the first letter of the names you want to print, or type 'ALL."
+def specific_students(students)
+  puts "Enter the first letter of the names you want to print"
   specific_letter = gets.chomp.upcase
-end
-
-def sort_students(specific_letter, students)
-  sorted_students = if specific_letter == "ALL"
-    students
-  else
-    students.select {|n| n[:name][0] == specific_letter}
-  end
+  students = students.select {|n| n[:name][0] == specific_letter}
 end
 
 def print_header
@@ -67,39 +57,57 @@ def print_header
   puts "-------------"
 end
 
-def print(sorted_students)
+def print(students)
   i = 0
-  cohorts_arr = sorted_students.map {|dict| dict[:cohort]}.uniq
-
-  cohorts_arr.each do |cohort|
-    puts ""
-    puts "#{cohort}".center(40)
-    sorted_students.each do |student|
-      if student[:cohort] == cohort
-          puts ""
-          puts ("#{(i+1)}. #{sorted_students[i][:name]}").center(40)
-          puts ("D.O.B: #{sorted_students[i][:dob]}").center(40)
-          puts ("height: #{sorted_students[i][:height]}").center(40)
-          puts ("gender: #{sorted_students[i][:gender]}").center(40)
-          i+=1
+  if students.size >= 1
+    students.map {|dict| dict[:cohort]}.uniq.each do |cohort|
+      puts ""
+      puts "#{cohort}".center(40)
+      students.each do |student|
+        if student[:cohort] == cohort
+            puts ""
+            puts ("#{(i+1)}. #{students[i][:name]}").center(40)
+            puts ("D.O.B: #{students[i][:dob]}").center(40)
+            puts ("height: #{students[i][:height]}").center(40)
+            puts ("gender: #{students[i][:gender]}").center(40)
+            i+=1
+        end
       end
     end
   end
 end
 
-def print_footer(sorted_students)
-    puts "\nOverall, we have #{sorted_students.count} great students."
+def print_footer(students)
+    puts "\nOverall, we have #{students.count} great students."
 end
 
-
-students = input_students
-specific_letter = specific_students
-sorted_students = sort_students(specific_letter, students)
-
-print_header
-
-if students.size >= 1
-  print(sorted_students)
+def interactive_menu
+  students = []
+  loop do
+  #   1. Print the menu and ask what to do.
+  puts "Which option would you like to do?\n\n"
+  puts "Option 1: Input the students"
+  puts "Option 2: Show the students"
+  puts "Option 9: Exit\n"
+  #   2. Read the input and save it to a variable
+  selection = gets.chomp
+  #   3. Do what the user has asked
+    case selection
+    when "1"
+      # user adds students
+      students = input_students
+    when "2"
+      # prints all students
+      print_header
+      print(students)
+      print_footer(students)
+    when "9"
+      exit
+    else
+      puts "I don't know what you meant, try again"
+    end
+  #   4.Repeat from step 1
+  end
 end
 
-print_footer(sorted_students)
+interactive_menu
