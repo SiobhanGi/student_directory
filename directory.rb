@@ -1,46 +1,42 @@
 #name, cohort, hobbies, height input seperated into different methods
 @students = []
 
-def cohort
-  puts "Enter the students cohort."
-  cohort = gets.chop.to_sym.capitalize
-end
+# INPUT METHODS
 
-def age
-puts "Please enter a students age."
-age = gets.chop.capitalize
-end
-
-def height
-  puts "Enter the students height."
-  height = gets.chomp.capitalize
-end
-
-def gender
-  puts "Enter the students gender."
-  gender = gets.chomp.to_sym.capitalize
+def message(field)
+  puts "Enter the students #{name}"
+  field = STDIN.gets.chop.capitalize
+  return field
 end
 
 def input_students
-  puts "Please enter the names of the student."
-  name = gets.chomp
-  while !name.empty? do
-  current_student = {name: name.capitalize.to_sym, cohort: cohort, age: age, height: height, gender: gender}.reject {|k,v| v == nil}
-  current_student.each do |k, v|
-    puts "#{k}: #{v}"
-  end
+  name, cohort, age, height, gender = message("name"), message("cohort"), message("age"), message("height"), message("gender")
+  while !name.empty?
+  @current_student = {name: name.to_sym,
+                    cohort: cohort.to_sym,
+                    age: age,
+                    height: height,
+                    gender: gender.to_sym}.reject {|k, v| v.empty?}
+
+  #  check details are correct, if they are push to array
+  @current_student.each {|k, v| puts "#{k}: #{v}" }
   puts "\nAre these details correct? type 'yes' or 'no'"
-  @students << current_student if gets.chomp.downcase.chr == "y"
-  puts @students.size <= 1 ? "Now we have #{@students.count} student." : "Now we have #{@students.count} students."
-  puts "Please enter the names of the student."
-  name = gets.chomp
+  @students << @current_student if STDIN.gets.chomp.downcase.chr == "y"
+  puts current_student_count
+  name = message("name")
   end
+end
+
+def current_student_count#prints out count
+  puts @students.size <= 1 ? "Now we have #{@students.count} student." : "Now we have #{@students.count} students."
 end
 
 def specific_students
   puts "Enter the first letter of the names you want to print"
-  specific_letter = gets.chomp.upcase
+  specific_letter = STDIN.gets.chop.upcase
 end
+
+# PRINT METHODS
 
 def print_header
   puts "The students of Villains Academy"
@@ -50,7 +46,7 @@ end
 def print_students_list
   i = 0
   if @students.size >= 1
-    @students.map {|dict| dict[:cohort]}.uniq.each do |cohort|
+    @students.map {|student| student[:cohort]}.uniq.each do |cohort|
       puts ""
       puts "#{cohort} cohort".center(40)
       @students.each do |student|
@@ -71,8 +67,16 @@ def print_footer
     puts "\nOverall, we have #{@students.count} great students."
 end
 
+def show_students
+  print_header
+  print_students_list
+  print_footer
+end
+
+# PROGRAM MENU
+
 def print_menu
-  puts "What would you like to do? Type the option number\n\n"
+  puts "\nWhat would you like to do? Type the option number\n\n"
   puts "Option 1: Add students."
   puts "Option 2: Show current students."
   puts "Option 3: Save students to csv file."
@@ -80,18 +84,11 @@ def print_menu
   puts "Option 9: Exit\n"
 end
 
-def show_students
-  print_header
-  print_students_list
-  print_footer
-end
-
-def process(selection)
+def program(selection)
   case selection
-  when "1"
-    input_students # user manually add data
-  when "2"
-    # prints all students
+  when "1" # user manually add data
+    input_students
+  when "2"  # prints all students
     show_students
   when "3" # saves student data to csv file
     save_students
@@ -103,6 +100,8 @@ def process(selection)
     puts "I don't know what you meant, try again"
   end
 end
+
+#FILE HANDLING
 
 def save_students
   file = File.open("students.csv", "w")
@@ -116,21 +115,53 @@ def save_students
   puts "\n\nFile successfully saved to students.csv\n\n"
 end
 
+def get_filename
+  puts "Do you want to load a different file then 'students.csv'? Type 'yes' or 'no'"
+  choice = gets.chomp
+  if choice.chr == "y"
+    puts "Enter file you want to load, including file extension"
+    filename = gets.chomp
+  elsif choice.chr == "n"
+    filename = "students.csv"
+  else
+    puts "I did not understand your choice.\n"
+  end
+  return filename
+end
+
 def load_students
-  file = File.open("students.csv", "r")
+  filename = get_filename
+  puts filename
+  file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort, age, height, gender = line.chomp.split(",")
     @students << {name: name.to_sym, cohort: cohort.to_sym, age: age, height: height, gender: gender.to_sym}
   end
   file.close
-  puts "\n\nFile students.csv successfully loaded\n\n"
+  puts "\nFile #{filename} successfully loaded\n"
 end
 
-def interactive_menu
-  loop do
-  print_menu
-  process(gets.chomp)
+def try_load_students
+  filename = ARGV.first #first argument from the command line
+  return if filename.nil? #get out of the method if it isn't given
+  if File.exists?(filename)
+    load_students(filename)
+    puts "loaded #{@students.count} from #{filename}"
+  else #if it doesn't exist
+    puts "sorry #{filename} doesn't exist"
+    exit
   end
 end
 
+# PROGRAM EXECUTION
+
+def interactive_menu
+  load_students
+  loop do
+  print_menu
+  program(STDIN.gets.chomp)
+  end
+end
+
+try_load_students
 interactive_menu
