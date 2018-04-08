@@ -4,7 +4,7 @@
 # INPUT METHODS
 
 def message(field)
-  puts "Enter the students #{name}"
+  puts "Enter the students #{field}"
   field = STDIN.gets.chop.capitalize
   return field
 end
@@ -91,9 +91,9 @@ def program(selection)
   when "2"  # prints all students
     show_students
   when "3" # saves student data to csv file
-    save_students
+    save_students(filename("Save to"))
   when "4" # loads student data from csv file
-    load_students
+    load_students(filename("Load"))
   when "9" # exits program
     exit
   else # exception case
@@ -102,9 +102,23 @@ def program(selection)
 end
 
 #FILE HANDLING
+def filename(save_or_load)
+  puts "#{save_or_load} default file 'students.csv'? Type 'yes' or 'no'"
+  user_choice = gets.chomp
+    if user_choice.chr == "y"
+      filename = "students.csv"
+    elsif user_choice.chr == "n"
+      puts "Enter file name you want to " + save_or_load.downcase + ". Include file extenstion."
+      filename = gets.chomp.downcase
+    else
+      puts "Sorry invalid filename"
+      exit
+    end
+  return filename
+end
 
-def save_students
-  file = File.open("students.csv", "w")
+def save_students(filename="student.csv")
+  file = File.open(filename, "w")
   #  iterate over the students array and save to file
   @students.each do |student|
     student_data = [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
@@ -112,26 +126,10 @@ def save_students
     file.puts csv_line
   end
   file.close
-  puts "\n\nFile successfully saved to students.csv\n\n"
+  puts "\n\nFile successfully saved to #{filename}\n\n"
 end
 
-def get_filename
-  puts "Do you want to load a different file then 'students.csv'? Type 'yes' or 'no'"
-  choice = gets.chomp
-  if choice.chr == "y"
-    puts "Enter file you want to load, including file extension"
-    filename = gets.chomp
-  elsif choice.chr == "n"
-    filename = "students.csv"
-  else
-    puts "I did not understand your choice.\n"
-  end
-  return filename
-end
-
-def load_students
-  filename = get_filename
-  puts filename
+def load_students(filename="students.csv")
   file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort, age, height, gender = line.chomp.split(",")
@@ -158,8 +156,8 @@ end
 def interactive_menu
   load_students
   loop do
-  print_menu
-  program(STDIN.gets.chomp)
+    print_menu
+    program(STDIN.gets.chomp)
   end
 end
 
