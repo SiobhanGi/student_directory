@@ -118,25 +118,25 @@ def filename(save_or_load)
 end
 
 def save_students(filename="student.csv")
-  file = File.open(filename, "w")
+  File.open(filename, mode = "w") do |file|
   #  iterate over the students array and save to file
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
-  end
-  file.close
+    @students.each do |student|
+      student_data = [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
+      csv_line = student_data.join(",")
+      file.puts csv_line
+    end
   puts "\n\nFile successfully saved to #{filename}\n\n"
+  end
 end
 
 def load_students(filename="students.csv")
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
-    name, cohort, age, height, gender = line.chomp.split(",")
-    @students << {name: name.to_sym, cohort: cohort.to_sym, age: age, height: height, gender: gender.to_sym}
-  end
-  file.close
+  File.open(filename, mode = "r") do |file|
+    file.readlines.each do |line|
+      name, cohort, age, height, gender = line.chomp.split(",")
+      @students << {name: name.to_sym, cohort: cohort.to_sym, age: age, height: height, gender: gender.to_sym}
+    end
   puts "\nFile #{filename} successfully loaded\n"
+  end
 end
 
 def try_load_students
