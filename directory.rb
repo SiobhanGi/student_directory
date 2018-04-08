@@ -1,4 +1,6 @@
 #name, cohort, hobbies, height input seperated into different methods
+require "csv"
+
 @students = []
 
 # INPUT METHODS
@@ -104,12 +106,12 @@ end
 #FILE HANDLING
 def filename(save_or_load)
   puts "#{save_or_load} default file 'students.csv'? Type 'yes' or 'no'"
-  user_choice = gets.chomp
+  user_choice = STDIN.gets.chomp
     if user_choice.chr == "y"
       filename = "students.csv"
     elsif user_choice.chr == "n"
       puts "Enter file name you want to " + save_or_load.downcase + ". Include file extenstion."
-      filename = gets.chomp.downcase
+      filename = STDIN.gets.chomp.downcase
     else
       puts "Sorry invalid filename"
       exit
@@ -118,25 +120,20 @@ def filename(save_or_load)
 end
 
 def save_students(filename="student.csv")
-  File.open(filename, mode = "w") do |file|
-  #  iterate over the students array and save to file
+  CSV.open("./#{filename}", mode = "w") do |csv|
     @students.each do |student|
-      student_data = [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
-      csv_line = student_data.join(",")
-      file.puts csv_line
+      csv << [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
     end
-  puts "\n\nFile successfully saved to #{filename}\n\n"
   end
+  puts "\n\nFile successfully saved to #{filename}\n\n"
 end
 
 def load_students(filename="students.csv")
-  File.open(filename, mode = "r") do |file|
-    file.readlines.each do |line|
-      name, cohort, age, height, gender = line.chomp.split(",")
-      @students << {name: name.to_sym, cohort: cohort.to_sym, age: age, height: height, gender: gender.to_sym}
-    end
-  puts "\nFile #{filename} successfully loaded\n"
+  CSV.foreach("./#{filename}") do |row|
+    name, cohort, age, height, gender = row
+    @students << {name: name.to_sym, cohort: cohort.to_sym, age: age, height: height, gender: gender.to_sym}
   end
+  puts "\nFile #{filename} successfully loaded\n"
 end
 
 def try_load_students
