@@ -36,9 +36,22 @@ end
 def specific_students
   puts "Enter the first letter of the names you want to print"
   specific_letter = STDIN.gets.chop.upcase
+  i = 0
+  @students.each do |student|
+    if student[:name][0] == specific_letter
+      puts ("#{(i+1)}. #{student[:name]}").center(40)
+      puts ("cohort: #{student[:name]}").center(40)
+      puts ("age: #{student[:age]}").center(40)
+      puts ("height: #{student[:height]}").center(40)
+      puts ("gender: #{student[:gender]}").center(40)
+      i+=1
+    end
+  end
 end
 
 # PRINT METHODS
+def arr_sort
+end
 
 def print_header
   puts "The students of Villains Academy"
@@ -54,10 +67,10 @@ def print_students_list
       @students.each do |student|
         if student[:cohort] == cohort
             puts ""
-            puts ("#{(i+1)}. #{@students[i][:name]}").center(40)
-            puts ("age: #{@students[i][:age]}").center(40)
-            puts ("height: #{@students[i][:height]}").center(40)
-            puts ("gender: #{@students[i][:gender]}").center(40)
+            puts ("#{(i+1)}. #{student[:name]}").center(40)
+            puts ("age: #{student[:age]}").center(40)
+            puts ("height: #{student[:height]}").center(40)
+            puts ("gender: #{students[:gender]}").center(40)
             i+=1
         end
       end
@@ -80,9 +93,10 @@ end
 def print_menu
   puts "\nWhat would you like to do? Type the option number\n\n"
   puts "Option 1: Add students."
-  puts "Option 2: Show current students."
-  puts "Option 3: Save students to csv file."
-  puts "Option 4: Load students from csv file."
+  puts "Option 2: Show all students."
+  puts "Option 3: Show specific students"
+  puts "Option 4: Save students to csv file."
+  puts "Option 5: Load students from csv file."
   puts "Option 9: Exit\n"
 end
 
@@ -92,9 +106,11 @@ def program(selection)
     input_students
   when "2"  # prints all students
     show_students
-  when "3" # saves student data to csv file
+  when "3" #show specific students
+    specific_students
+  when "4" # saves student data to csv file
     save_students(filename("Save to"))
-  when "4" # loads student data from csv file
+  when "5"# loads student data from csv file
     load_students(filename("Load"))
   when "9" # exits program
     exit
@@ -120,7 +136,7 @@ def filename(save_or_load)
 end
 
 def save_students(filename="student.csv")
-  CSV.open("./#{filename}", mode = "w") do |csv|
+  CSV.open("./#{filename}", mode = "wb") do |csv|
     @students.each do |student|
       csv << [student[:name], student[:cohort], student[:age], student[:height], student[:gender]]
     end
