@@ -3,6 +3,7 @@
 A Command line program where you can add/print the students of Villians Academy.
 
 Full list of functions:
+
 Option 1: Add students to the directory
 Option 2: Shows all students 
 Option 3: Shows specific students (filtered by 1st name letter)
