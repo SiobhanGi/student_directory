@@ -1,6 +1,6 @@
 # student_directory
 
-A Command line program where you can add/print the students of Villians Academy.
+A Command line program to add/print/save the students of Villians Academy.
 
 Full list of functions:
 
